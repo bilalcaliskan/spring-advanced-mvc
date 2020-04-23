@@ -1,5 +1,7 @@
 package com.bcaliskan.springadvancedmvc.services.jpaservices;
 
+import com.bcaliskan.springadvancedmvc.commands.CustomerForm;
+import com.bcaliskan.springadvancedmvc.converters.CustomerFormToCustomer;
 import com.bcaliskan.springadvancedmvc.domain.Customer;
 import com.bcaliskan.springadvancedmvc.services.CustomerService;
 import com.bcaliskan.springadvancedmvc.services.security.EncryptionService;
@@ -14,10 +16,16 @@ import java.util.List;
 public class CustomerServiceJpaDaoImpl extends AbstractJpaDaoService implements CustomerService {
 
     private EncryptionService encryptionService;
+    private CustomerFormToCustomer customerFormToCustomer;
 
     @Autowired
     public void setEncryptionService(EncryptionService encryptionService) {
         this.encryptionService = encryptionService;
+    }
+
+    @Autowired
+    public void setCustomerFormToCustomer(CustomerFormToCustomer customerFormToCustomer) {
+        this.customerFormToCustomer = customerFormToCustomer;
     }
 
     @Override
@@ -58,5 +66,20 @@ public class CustomerServiceJpaDaoImpl extends AbstractJpaDaoService implements 
         em.getTransaction().begin();
         em.remove(em.find(Customer.class, id));
         em.getTransaction().commit();
+    }
+
+    @Override
+    public Customer saveOrUpdateCustomerForm(CustomerForm customerForm) {
+        Customer newCustomer = customerFormToCustomer.convert(customerForm);
+
+        //enhance if saved
+        if(newCustomer.getUser().getId() != null){
+            Customer existingCustomer = getById(newCustomer.getUser().getId());
+
+            //set enabled flag from db
+            newCustomer.getUser().setEnabled(existingCustomer.getUser().getEnabled());
+        }
+
+        return saveOrUpdate(newCustomer);
     }
 }
