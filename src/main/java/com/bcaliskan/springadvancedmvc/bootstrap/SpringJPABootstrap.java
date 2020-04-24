@@ -43,7 +43,7 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
         loadOrderHistory();
         loadRoles();
         assignUsersToDefaultRole();
-
+        assignUsersToAdminRole();
     }
 
     private void assignUsersToDefaultRole() {
@@ -51,7 +51,7 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
         List<User> users = (List<User>) userService.listAll();
 
         roles.forEach(role ->{
-            if(role.getRole().equalsIgnoreCase("CUSTOMER")){
+            if (role.getRole().equalsIgnoreCase("CUSTOMER")) {
                 users.forEach(user -> {
                     user.addRole(role);
                     userService.saveOrUpdate(user);
@@ -60,10 +60,30 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
         });
     }
 
+    private void assignUsersToAdminRole() {
+        List<Role> roles = (List<Role>) roleService.listAll();
+        List<User> users = (List<User>) userService.listAll();
+
+        roles.forEach(role -> {
+            if (role.getRole().equalsIgnoreCase("ADMIN")) {
+                users.forEach(user -> {
+                    if (user.getUsername().equals("bilal")) {
+                        user.addRole(role);
+                        userService.saveOrUpdate(user);
+                    }
+                });
+            }
+        });
+    }
+
     private void loadRoles() {
-        Role role = new Role();
-        role.setRole("CUSTOMER");
-        roleService.saveOrUpdate(role);
+        Role customerRole = new Role();
+        customerRole.setRole("CUSTOMER");
+        roleService.saveOrUpdate(customerRole);
+
+        Role adminRole = new Role();
+        adminRole.setRole("ADMIN");
+        roleService.saveOrUpdate(adminRole);
     }
 
     private void loadOrderHistory() {
@@ -117,18 +137,18 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
         userService.saveOrUpdate(user1);
 
         User user2 = new User();
-        user2.setUsername("fglenanne");
+        user2.setUsername("bilal");
         user2.setPassword("password");
 
         Customer customer2 = new Customer();
-        customer2.setFirstName("Fiona");
-        customer2.setLastName("Glenanne");
+        customer2.setFirstName("Bilal");
+        customer2.setLastName("Caliskan");
         customer2.setBillingAddress(new Address());
         customer2.getBillingAddress().setAddressLine1("1 Key Biscane Ave");
         customer2.getBillingAddress().setCity("Miami");
         customer2.getBillingAddress().setState("Florida");
         customer2.getBillingAddress().setZipCode("33101");
-        customer2.setEmail("fiona@burnnotice.com");
+        customer2.setEmail("bilalcaliskan@example.com");
         customer2.setPhoneNumber("305.323.0233");
         user2.setCustomer(customer2);
         userService.saveOrUpdate(user2);

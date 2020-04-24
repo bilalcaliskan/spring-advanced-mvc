@@ -4,6 +4,7 @@ import com.bcaliskan.springadvancedmvc.domain.User;
 import com.bcaliskan.springadvancedmvc.repositories.CustomerRepository;
 import com.bcaliskan.springadvancedmvc.repositories.UserRepository;
 import com.bcaliskan.springadvancedmvc.services.UserService;
+import com.bcaliskan.springadvancedmvc.services.security.EncryptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -17,10 +18,16 @@ public class UserServiceRepoImpl implements UserService {
 
     private UserRepository userRepository;
     private CustomerRepository customerRepository;
+    private EncryptionService encryptionService;
 
     @Autowired
     public void setUserRepository(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    @Autowired
+    public void setEncryptionService(EncryptionService encryptionService) {
+        this.encryptionService = encryptionService;
     }
 
     @Autowired
@@ -42,6 +49,10 @@ public class UserServiceRepoImpl implements UserService {
 
     @Override
     public User saveOrUpdate(User domainObject) {
+
+        if(domainObject.getPassword() != null){
+            domainObject.setEncryptedPassword(encryptionService.encryptString(domainObject.getPassword()));
+        }
         return userRepository.save(domainObject);
     }
 
@@ -51,6 +62,11 @@ public class UserServiceRepoImpl implements UserService {
         User user = userRepository.findOne(id);
         customerRepository.delete(user.getCustomer());
         userRepository.delete(user);
+    }
+
+    @Override
+    public User findByUserName(String userName) {
+        return userRepository.findByUsername(userName);
     }
 
 }

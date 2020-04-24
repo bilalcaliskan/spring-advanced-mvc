@@ -56,17 +56,22 @@ public class CustomerServiceRepoImpl implements CustomerService {
     @Override
     public Customer saveOrUpdateCustomerForm(CustomerForm customerForm) {
         Customer newCustomer = customerFormToCustomer.convert(customerForm);
-        if (newCustomer.getUser().getId() != null) {
+
+        if(newCustomer.getUser().getId() != null){
             Customer existingCustomer = getById(newCustomer.getId());
+
             newCustomer.getUser().setEnabled(existingCustomer.getUser().getEnabled());
         }
+
         return saveOrUpdate(newCustomer);
     }
 
     @Override
     @Transactional
     public void delete(Integer id) {
+
         Customer customer = customerRepository.findOne(id);
+
         userRepository.delete(customer.getUser());
         customerRepository.delete(customer);
     }

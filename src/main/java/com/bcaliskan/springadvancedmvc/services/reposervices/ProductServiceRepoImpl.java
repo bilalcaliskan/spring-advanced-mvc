@@ -27,7 +27,6 @@ public class ProductServiceRepoImpl implements ProductService {
     public void setProductFormToProduct(ProductFormToProduct productFormToProduct) {
         this.productFormToProduct = productFormToProduct;
     }
-
     @Override
     public List<?> listAll() {
         List<Product> products = new ArrayList<>();
