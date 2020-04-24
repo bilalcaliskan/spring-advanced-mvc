@@ -29,11 +29,4 @@ public class ProductServiceJpaDaoImplTest {
         assert products.size() == 5;
     }
 
-    @Test
-    public void testGetByIdMethod() {
-        Integer id = 1;
-        Product product = productService.getById(id);
-        assert Objects.nonNull(product);
-    }
-
 }

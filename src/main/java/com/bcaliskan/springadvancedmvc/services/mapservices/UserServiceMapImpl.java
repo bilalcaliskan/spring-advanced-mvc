@@ -30,4 +30,5 @@ public class UserServiceMapImpl extends AbstractMapService implements UserServic
     public void delete(Integer id) {
         super.delete(id);
     }
+
 }

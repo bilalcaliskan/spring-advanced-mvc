@@ -1,5 +1,7 @@
 package com.bcaliskan.springadvancedmvc.controllers;
 
+import com.bcaliskan.springadvancedmvc.commands.ProductForm;
+import com.bcaliskan.springadvancedmvc.converters.ProductToProductForm;
 import com.bcaliskan.springadvancedmvc.domain.Product;
 import com.bcaliskan.springadvancedmvc.services.ProductService;
 import org.junit.Before;
@@ -21,22 +23,24 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 public class ProductControllerTest {
 
-    @Mock // Mockito Mock object
+    @Mock //Mockito Mock object
     private ProductService productService;
 
-    @InjectMocks // setups controller, and injects mock objects into it. Just dependency injection
+    @InjectMocks //setups up controller, and injects mock objects into it.
     private ProductController productController;
 
     private MockMvc mockMvc;
 
     @Before
-    public void setup() {
-        MockitoAnnotations.initMocks(this); // initializes controller and mocks
+    public void setup(){
+        MockitoAnnotations.initMocks(this); //initilizes controller and mocks
+        productController.setProductToProductForm(new ProductToProductForm());
         mockMvc = MockMvcBuilders.standaloneSetup(productController).build();
     }
 
     @Test
-    public void testList() throws Exception {
+    public void testList() throws Exception{
+
         List<Product> products = new ArrayList<>();
         products.add(new Product());
         products.add(new Product());
@@ -64,6 +68,19 @@ public class ProductControllerTest {
     }
 
     @Test
+    public void testEdit() throws Exception{
+        Integer id = 1;
+
+        //Tell Mockito stub to return new product for ID 1
+        when(productService.getById(id)).thenReturn(new Product());
+
+        mockMvc.perform(get("/product/edit/1"))
+                .andExpect(status().isOk())
+                .andExpect(view().name("product/productform"))
+                .andExpect(model().attribute("productForm", instanceOf(ProductForm.class)));
+    }
+
+    @Test
     public void testNewProduct() throws Exception {
         Integer id = 1;
 
@@ -73,7 +90,7 @@ public class ProductControllerTest {
         mockMvc.perform(get("/product/new"))
                 .andExpect(status().isOk())
                 .andExpect(view().name("product/productform"))
-                .andExpect(model().attribute("product", instanceOf(Product.class)));
+                .andExpect(model().attribute("productForm", instanceOf(ProductForm.class)));
     }
 
     @Test
@@ -81,7 +98,7 @@ public class ProductControllerTest {
         Integer id = 1;
         String description = "Test Description";
         BigDecimal price = new BigDecimal("12.00");
-        String imageUrl = "example.com";
+        String imageUrl = "http://example.com";
 
         Product returnProduct = new Product();
         returnProduct.setId(id);
@@ -89,24 +106,20 @@ public class ProductControllerTest {
         returnProduct.setPrice(price);
         returnProduct.setImageUrl(imageUrl);
 
-        when(productService.saveOrUpdate(Matchers.any())).thenReturn(returnProduct);
+        when(productService.saveOrUpdateProductForm(Matchers.<ProductForm>any())).thenReturn(returnProduct);
 
         mockMvc.perform(post("/product")
                 .param("id", "1")
                 .param("description", description)
                 .param("price", "12.00")
-                .param("imageUrl", "example.com"))
+                .param("imageUrl", "http://example.com"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(view().name("redirect:/product/show/1"))
-                .andExpect(model().attribute("product", instanceOf(Product.class)))
-                .andExpect(model().attribute("product", hasProperty("id", is(id))))
-                .andExpect(model().attribute("product", hasProperty("description", is(description))))
-                .andExpect(model().attribute("product", hasProperty("price", is(price))))
-                .andExpect(model().attribute("product", hasProperty("imageUrl", is(imageUrl))));
+                .andExpect(view().name("redirect:/product/show/1"));
+
 
         //verify properties of bound object
-        ArgumentCaptor<Product> boundProduct = ArgumentCaptor.forClass(Product.class);
-        verify(productService).saveOrUpdate(boundProduct.capture());
+        ArgumentCaptor<ProductForm> boundProduct = ArgumentCaptor.forClass(ProductForm.class);
+        verify(productService).saveOrUpdateProductForm(boundProduct.capture());
 
         assertEquals(id, boundProduct.getValue().getId());
         assertEquals(description, boundProduct.getValue().getDescription());

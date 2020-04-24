@@ -184,4 +184,5 @@ public class SpringJPABootstrap implements ApplicationListener<ContextRefreshedE
         productService.saveOrUpdate(product5);
 
     }
+
 }

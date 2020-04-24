@@ -10,6 +10,7 @@ import java.util.List;
 @Service
 @Profile("map")
 public class OrderServiceMapImpl extends AbstractMapService implements OrderService {
+
     @Override
     public List<DomainObject> listAll() {
         return super.listAll();
@@ -29,4 +30,5 @@ public class OrderServiceMapImpl extends AbstractMapService implements OrderServ
     public void delete(Integer id) {
         super.delete(id);
     }
+
 }

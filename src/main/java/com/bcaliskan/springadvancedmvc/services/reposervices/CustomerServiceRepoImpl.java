@@ -4,10 +4,12 @@ import com.bcaliskan.springadvancedmvc.commands.CustomerForm;
 import com.bcaliskan.springadvancedmvc.converters.CustomerFormToCustomer;
 import com.bcaliskan.springadvancedmvc.domain.Customer;
 import com.bcaliskan.springadvancedmvc.repositories.CustomerRepository;
+import com.bcaliskan.springadvancedmvc.repositories.UserRepository;
 import com.bcaliskan.springadvancedmvc.services.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,11 +18,17 @@ import java.util.List;
 public class CustomerServiceRepoImpl implements CustomerService {
 
     private CustomerRepository customerRepository;
+    private UserRepository userRepository;
     private CustomerFormToCustomer customerFormToCustomer;
 
     @Autowired
     public void setCustomerRepository(CustomerRepository customerRepository) {
         this.customerRepository = customerRepository;
+    }
+
+    @Autowired
+    public void setUserRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
     @Autowired
@@ -46,20 +54,21 @@ public class CustomerServiceRepoImpl implements CustomerService {
     }
 
     @Override
-    public void delete(Integer id) {
-        customerRepository.delete(id);
-    }
-
-    @Override
     public Customer saveOrUpdateCustomerForm(CustomerForm customerForm) {
         Customer newCustomer = customerFormToCustomer.convert(customerForm);
-
         if (newCustomer.getUser().getId() != null) {
             Customer existingCustomer = getById(newCustomer.getId());
             newCustomer.getUser().setEnabled(existingCustomer.getUser().getEnabled());
         }
-
         return saveOrUpdate(newCustomer);
+    }
+
+    @Override
+    @Transactional
+    public void delete(Integer id) {
+        Customer customer = customerRepository.findOne(id);
+        userRepository.delete(customer.getUser());
+        customerRepository.delete(customer);
     }
 
 }

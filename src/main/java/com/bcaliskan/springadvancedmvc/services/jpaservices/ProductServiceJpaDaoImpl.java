@@ -1,7 +1,10 @@
 package com.bcaliskan.springadvancedmvc.services.jpaservices;
 
+import com.bcaliskan.springadvancedmvc.commands.ProductForm;
+import com.bcaliskan.springadvancedmvc.converters.ProductFormToProduct;
 import com.bcaliskan.springadvancedmvc.domain.Product;
 import com.bcaliskan.springadvancedmvc.services.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
@@ -10,6 +13,13 @@ import java.util.List;
 @Service
 @Profile("jpadao")
 public class ProductServiceJpaDaoImpl extends AbstractJpaDaoService implements ProductService {
+
+    private ProductFormToProduct productFormToProduct;
+
+    @Autowired
+    public void setProductFormToProduct(ProductFormToProduct productFormToProduct) {
+        this.productFormToProduct = productFormToProduct;
+    }
 
     @Override
     public List<Product> listAll() {
@@ -34,6 +44,11 @@ public class ProductServiceJpaDaoImpl extends AbstractJpaDaoService implements P
         em.getTransaction().commit();
 
         return savedProduct;
+    }
+
+    @Override
+    public Product saveOrUpdateProductForm(ProductForm productForm) {
+        return saveOrUpdate(productFormToProduct.convert(productForm));
     }
 
     @Override

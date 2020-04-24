@@ -16,12 +16,12 @@ public class IndexControllerTest {
 
     private MockMvc mockMvc;
 
+    private IndexController indexController;
 
     @Before
     public void setup(){
-        IndexController indexController = new IndexController();
+        indexController = new IndexController();
         mockMvc = MockMvcBuilders.standaloneSetup(indexController).build();
-
     }
 
     @Test

@@ -12,7 +12,6 @@ public class CustomerFormToCustomer implements Converter<CustomerForm, Customer>
 
     @Override
     public Customer convert(CustomerForm customerForm) {
-
         Customer customer = new Customer();
         customer.setUser(new User());
         customer.setBillingAddress(new Address());
@@ -27,7 +26,7 @@ public class CustomerFormToCustomer implements Converter<CustomerForm, Customer>
         customer.setLastName(customerForm.getLastName());
         customer.setEmail(customerForm.getEmail());
         customer.setPhoneNumber(customerForm.getPhoneNumber());
-
         return customer;
     }
+
 }

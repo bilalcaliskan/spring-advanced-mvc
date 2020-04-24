@@ -4,6 +4,7 @@ import com.bcaliskan.springadvancedmvc.domain.DomainObject;
 import java.util.*;
 
 public abstract class AbstractMapService  {
+
     protected Map<Integer, DomainObject> domainMap;
 
     public AbstractMapService() {

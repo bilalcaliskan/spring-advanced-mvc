@@ -60,15 +60,6 @@ public class CustomerServiceJpaDaoImpl extends AbstractJpaDaoService implements 
     }
 
     @Override
-    public void delete(Integer id) {
-        EntityManager em = emf.createEntityManager();
-
-        em.getTransaction().begin();
-        em.remove(em.find(Customer.class, id));
-        em.getTransaction().commit();
-    }
-
-    @Override
     public Customer saveOrUpdateCustomerForm(CustomerForm customerForm) {
         Customer newCustomer = customerFormToCustomer.convert(customerForm);
 
@@ -81,5 +72,14 @@ public class CustomerServiceJpaDaoImpl extends AbstractJpaDaoService implements 
         }
 
         return saveOrUpdate(newCustomer);
+    }
+
+    @Override
+    public void delete(Integer id) {
+        EntityManager em = emf.createEntityManager();
+
+        em.getTransaction().begin();
+        em.remove(em.find(Customer.class, id));
+        em.getTransaction().commit();
     }
 }
