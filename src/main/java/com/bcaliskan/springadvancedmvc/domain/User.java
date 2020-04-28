@@ -19,6 +19,7 @@ public class User extends AbstractDomainClass {
 
     private String encryptedPassword;
     private Boolean enabled = true;
+    private Integer failedLoginAttempts = 0;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     private Cart cart;
