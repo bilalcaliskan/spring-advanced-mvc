@@ -1,7 +1,6 @@
 package com.bcaliskan.springadvancedmvc.config;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -49,20 +48,16 @@ public class HibernateJpaConfig {
     }
 
     @Bean
-    public EntityManagerFactoryBuilder entityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter) {
-        EntityManagerFactoryBuilder builder = new EntityManagerFactoryBuilder(
-                jpaVendorAdapter, properties,
-                this.persistenceUnitManager);
-        builder.setCallback(null);
-        return builder;
-    }
-
-    @Bean
-    public LocalContainerEntityManagerFactoryBean entityManagerFactory(EntityManagerFactoryBuilder factoryBuilder) {
-        Map<String, Object> vendorProperties = new LinkedHashMap<>();
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        Map<String, Object> vendorProperties = new LinkedHashMap<String, Object>();
         vendorProperties.putAll(properties);
-        return factoryBuilder.dataSource(this.dataSource).packages("com.bcaliskan.springadvancedmvc.domain")
-                .properties(vendorProperties).jta(false).build();
+        LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+        em.setDataSource(dataSource);
+        em.setPackagesToScan("com.bcaliskan.springadvancedmvc.domain");
+        JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        em.setJpaVendorAdapter(vendorAdapter);
+        em.setJpaPropertyMap(properties);
+        return em;
     }
 
 }
